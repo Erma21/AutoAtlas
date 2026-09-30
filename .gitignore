@@ -3,6 +3,8 @@
 .AppleDouble
 .LSOverride
 ._*
+.Spotlight-V100
+.Trashes
 
 # Xcode
 build/
@@ -18,4 +20,41 @@ DerivedData/
 xcuserdata/
 *.xccheckout
 *.moved-aside
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
 *.xcworkspace/xcuserdata/
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Package.resolved   # иногда оставляют, иногда игнорируют — на твой выбор
+
+# CocoaPods (если будешь использовать)
+Pods/
+*.xcworkspace
+
+# Carthage
+Carthage/Build/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# Code Injection
+iOSInjectionProject/
+
+# Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+# Archives
+*.xcarchive
+
+# Other
+*.log
+*.tmp
+*.swp
+*~.nib
