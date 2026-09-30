@@ -6,8 +6,6 @@ struct ComponentDetailView: View {
     var zoneImageName: String = "engineBg"
     @Environment(\.dismiss) private var dismiss
     
-    let accent = Color(red: 0.85, green: 0.80, blue: 0.70)
-    
     var body: some View {
         ZStack {
             // Фоновый рисунок со стеклянной подсветкой
@@ -38,17 +36,7 @@ struct ComponentDetailView: View {
                     }
                     .padding(22)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(
-                        ZStack {
-                            Rectangle().fill(.ultraThinMaterial)
-                            Color.black.opacity(0.35)
-                        }
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 24, style: .continuous)
-                            .stroke(.white.opacity(0.18), lineWidth: 1)
-                    )
+                    .glassCard(cornerRadius: 24)
                     
                     // Частые проблемы
                     if let issues = component.commonIssues, !issues.isEmpty {
@@ -56,12 +44,12 @@ struct ComponentDetailView: View {
                             HStack(spacing: 8) {
                                 Image(systemName: "exclamationmark.triangle.fill")
                                     .font(.system(size: 14))
-                                    .foregroundStyle(accent)
+                                    .foregroundStyle(Theme.accent)
                                 
                                 Text("ЧАСТЫЕ ПРОБЛЕМЫ")
                                     .font(.system(size: 11, weight: .bold))
                                     .kerning(1.5)
-                                    .foregroundStyle(accent)
+                                    .foregroundStyle(Theme.accent)
                             }
                             
                             Text(issues)
@@ -71,17 +59,7 @@ struct ComponentDetailView: View {
                         }
                         .padding(20)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(
-                            ZStack {
-                                Rectangle().fill(.ultraThinMaterial)
-                                Color.black.opacity(0.35)
-                            }
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                                .stroke(.white.opacity(0.15), lineWidth: 1)
-                        )
+                        .glassCard(cornerRadius: 22)
                     }
                     
                     // Подробные материалы
@@ -99,7 +77,7 @@ struct ComponentDetailView: View {
                                         VStack(alignment: .leading, spacing: 4) {
                                             Text(article.buttonLabel)
                                                 .font(.system(size: 11, weight: .bold))
-                                                .foregroundStyle(accent)
+                                                .foregroundStyle(Theme.accent)
                                             
                                             Text(article.title)
                                                 .font(.system(size: 16, weight: .semibold))
@@ -111,18 +89,9 @@ struct ComponentDetailView: View {
                                             .foregroundStyle(.white.opacity(0.4))
                                     }
                                     .padding(18)
-                                    .background(
-                                        ZStack {
-                                            Rectangle().fill(.ultraThinMaterial)
-                                            Color.black.opacity(0.35)
-                                        }
-                                    )
-                                    .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 18, style: .continuous)
-                                            .stroke(.white.opacity(0.18), lineWidth: 1)
-                                    )
+                                    .glassCard(cornerRadius: 18)
                                 }
+                                .buttonStyle(.glassTouch)
                             }
                         }
                     }
@@ -140,8 +109,6 @@ struct ComponentDetailView: View {
 struct ArticleDetailView: View {
     let article: Article
     var zoneImageName: String = "engineBg"
-    
-    let accent = Color(red: 0.85, green: 0.80, blue: 0.70)
     
     var body: some View {
         ZStack {
@@ -169,7 +136,7 @@ struct ArticleDetailView: View {
                         VStack(alignment: .leading, spacing: 10) {
                             Text(section.title)
                                 .font(.system(size: 17, weight: .bold))
-                                .foregroundStyle(accent)
+                                .foregroundStyle(Theme.accent)
                             
                             Text(section.text)
                                 .font(.system(size: 15))
@@ -178,18 +145,7 @@ struct ArticleDetailView: View {
                         }
                         .padding(20)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(
-                            ZStack {
-                                Rectangle().fill(.ultraThinMaterial)
-                                Color.black.opacity(0.35)
-                            }
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                                .stroke(.white.opacity(0.18), lineWidth: 1)
-                        )
-                        .shadow(color: .black.opacity(0.25), radius: 10, x: 0, y: 5)
+                        .glassCard(cornerRadius: 22)
                     }
                 }
                 .padding(20)

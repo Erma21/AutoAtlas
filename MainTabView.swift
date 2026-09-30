@@ -1,13 +1,12 @@
 import SwiftUI
 
 struct MainTabView: View {
-    let accent = Color(red: 0.65, green: 0.62, blue: 0.55)
     
-    // Настройка цвета нижней панели (TabBar), чтобы она не прыгала и не белела
+    // Настройка цвета нижней панели (TabBar)
     init() {
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor(red: 0.12, green: 0.12, blue: 0.14, alpha: 1.0)
+        appearance.backgroundColor = UIColor(red: 0.10, green: 0.10, blue: 0.12, alpha: 1.0)
         
         UITabBar.appearance().standardAppearance = appearance
         UITabBar.appearance().scrollEdgeAppearance = appearance
@@ -25,7 +24,7 @@ struct MainTabView: View {
                     Label("Диагностика", systemImage: "waveform.path.ecg")
                 }
         }
-        .tint(accent)
-        .preferredColorScheme(.dark) // Заставляет всю систему переключиться в темный режим
+        .tint(Theme.accent)
+        .preferredColorScheme(.dark)
     }
 }

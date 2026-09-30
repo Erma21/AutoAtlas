@@ -3,17 +3,14 @@ import SwiftUI
 // MARK: - ЭКРАН ТАБЛИЦЫ СРАВНЕНИЯ СИСТЕМ
 struct ComparisonTableView: View {
     let table: ComparisonTable
-    
-    let bg = Color(red: 0.05, green: 0.05, blue: 0.07)
-    let accent = Color(red: 0.85, green: 0.80, blue: 0.70)
-    
+
     var body: some View {
         ZStack {
-            bg.ignoresSafeArea()
+            Color.black.ignoresSafeArea()
             
             // Фоновое свечение для объема
             Circle()
-                .fill(accent.opacity(0.1))
+                .fill(Theme.accent.opacity(0.1))
                 .blur(radius: 100)
                 .frame(width: 300, height: 300)
                 .offset(x: 100, y: -200)
@@ -25,7 +22,7 @@ struct ComparisonTableView: View {
                     HStack(spacing: 12) {
                         Image(systemName: table.icon)
                             .font(.title2)
-                            .foregroundStyle(accent)
+                            .foregroundStyle(Theme.accent)
                         Text(table.title)
                             .font(.title3.bold())
                             .foregroundStyle(.white)
@@ -41,7 +38,7 @@ struct ComparisonTableView: View {
                             VStack(alignment: .leading, spacing: 0) {
                                 Text("Критерий")
                                     .font(.system(size: 12, weight: .bold))
-                                    .foregroundStyle(accent)
+                                    .foregroundStyle(Theme.accent)
                                     .textCase(.uppercase)
                                     .frame(height: 50, alignment: .bottomLeading)
                                     .padding(.bottom, 16)
@@ -89,21 +86,7 @@ struct ComparisonTableView: View {
                                 .frame(width: 160)
                                 .padding(.horizontal, 12)
                                 .padding(.bottom, 16)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 24, style: .continuous)
-                                        .fill(.ultraThinMaterial)
-                                )
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 24, style: .continuous)
-                                        .stroke(
-                                            LinearGradient(
-                                                colors: [Color.white.opacity(0.2), Color.clear],
-                                                startPoint: .topLeading,
-                                                endPoint: .bottomTrailing
-                                            ),
-                                            lineWidth: 1
-                                        )
-                                )
+                                .glassCard(cornerRadius: 24)
                             }
                         }
                         .padding(.horizontal, 20)

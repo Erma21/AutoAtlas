@@ -2,22 +2,22 @@ import SwiftUI
 
 // MARK: - ГЛАВНЫЙ ЭКРАН ПРИЛОЖЕНИЯ
 struct ContentView: View {
+    // Загрузка данных из data.json
+    @State private var vehicleZones: [VehicleZone] = DataLoader.loadVehicles()
+    
     @State private var selectedZone: VehicleZone? = nil
     @State private var selectedComponent: Component? = nil
     
-    // Новые стейты для поиска и навигации
+    // Стейты для поиска и навигации
     @State private var searchText: String = ""
     @State private var showComparisons = false
-    
-    let bg = Color(red: 0.05, green: 0.05, blue: 0.07)
-    let accent = Color(red: 0.85, green: 0.80, blue: 0.70)
     
     // ВЫЧИСЛЯЕМАЯ ЛОГИКА ПОИСКА (Ищет по названиям, описаниям и тексту статей)
     var searchResults: [Component] {
         if searchText.isEmpty { return [] }
         let query = searchText.lowercased()
         
-        return allZones.flatMap { $0.components }.filter { comp in
+        return vehicleZones.flatMap { $0.components }.filter { comp in
             let matchesName = comp.name.lowercased().contains(query)
             let matchesDesc = comp.description.lowercased().contains(query)
             let matchesIssues = (comp.commonIssues ?? "").lowercased().contains(query)
@@ -34,10 +34,10 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             ZStack(alignment: .bottom) {
-                bg.ignoresSafeArea()
+                Color.black.ignoresSafeArea()
                 
                 Circle()
-                    .fill(accent.opacity(0.08))
+                    .fill(Theme.accent.opacity(0.08))
                     .blur(radius: 120)
                     .frame(width: 320, height: 320)
                     .offset(y: -150)
@@ -49,7 +49,7 @@ struct ContentView: View {
                             Text("ATLAS AUTO")
                                 .font(.system(size: 11, weight: .bold))
                                 .kerning(3)
-                                .foregroundStyle(accent)
+                                .foregroundStyle(Theme.accent)
                             
                             Text("Интерактивный\nсправочник")
                                 .font(.system(size: 32, weight: .bold))
@@ -63,7 +63,7 @@ struct ContentView: View {
                                 .foregroundStyle(.gray)
                             TextField("Поиск (например: свечи, тормоза)", text: $searchText)
                                 .foregroundStyle(.white)
-                                .tint(accent)
+                                .tint(Theme.accent)
                             
                             if !searchText.isEmpty {
                                 Button(action: {
@@ -97,7 +97,7 @@ struct ContentView: View {
                                         .padding(.top, 20)
                                 } else {
                                     ForEach(searchResults) { component in
-                                        InteractiveComponentRow(component: component, accent: accent) {
+                                        InteractiveComponentRow(component: component) {
                                             selectedComponent = component
                                         }
                                     }
@@ -105,9 +105,7 @@ struct ContentView: View {
                             }
                         } else {
                             // ГЛАВНЫЙ ЭКРАН (Сравнения + Сетка)
-                            
-                            // Кнопка перехода к таблицам сравнения
-                            NavigationLink(destination: ComparisonsListView(accent: accent)) {
+                            NavigationLink(destination: ComparisonsListView()) {
                                 HStack {
                                     VStack(alignment: .leading, spacing: 4) {
                                         Text("Сравнение систем")
@@ -120,13 +118,12 @@ struct ContentView: View {
                                     Spacer()
                                     Image(systemName: "tablecells")
                                         .font(.title2)
-                                        .foregroundStyle(accent)
+                                        .foregroundStyle(Theme.accent)
                                 }
                                 .padding(16)
-                                .background(LinearGradient(colors: [Color.white.opacity(0.1), Color.white.opacity(0.05)], startPoint: .topLeading, endPoint: .bottomTrailing))
-                                .clipShape(RoundedRectangle(cornerRadius: 20))
-                                .overlay(RoundedRectangle(cornerRadius: 20).stroke(.white.opacity(0.15), lineWidth: 1))
+                                .glassCard(cornerRadius: 20)
                             }
+                            .buttonStyle(.glassTouch)
                             
                             VStack(alignment: .leading, spacing: 16) {
                                 Text("ВЫБЕРИТЕ РАЗДЕЛ")
@@ -135,8 +132,8 @@ struct ContentView: View {
                                     .foregroundStyle(.white.opacity(0.4))
                                 
                                 LazyVGrid(columns: [GridItem(.flexible(), spacing: 14), GridItem(.flexible(), spacing: 14)], spacing: 14) {
-                                    ForEach(allZones) { zone in
-                                        PremiumZoneCard(zone: zone, accent: accent) {
+                                    ForEach(vehicleZones) { zone in
+                                        PremiumZoneCard(zone: zone) {
                                             openZoneMenu(zone)
                                         }
                                     }
@@ -161,12 +158,18 @@ struct ContentView: View {
                     VStack(alignment: .leading, spacing: 18) {
                         HStack {
                             HStack(spacing: 12) {
-                                Image(systemName: zone.icon).font(.system(size: 20, weight: .semibold)).foregroundStyle(accent)
-                                Text(zone.name).font(.system(size: 22, weight: .bold)).foregroundStyle(.white)
+                                Image(systemName: zone.icon ?? "car.fill")
+                                    .font(.system(size: 20, weight: .semibold))
+                                    .foregroundStyle(Theme.accent)
+                                Text(zone.name)
+                                    .font(.system(size: 22, weight: .bold))
+                                    .foregroundStyle(.white)
                             }
                             Spacer()
                             Button { closeZoneMenu() } label: {
-                                Image(systemName: "xmark.circle.fill").font(.system(size: 26)).foregroundStyle(.white.opacity(0.4))
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.system(size: 26))
+                                    .foregroundStyle(.white.opacity(0.4))
                             }
                         }
                         
@@ -175,7 +178,7 @@ struct ContentView: View {
                         ScrollView(showsIndicators: false) {
                             VStack(spacing: 10) {
                                 ForEach(zone.components) { component in
-                                    InteractiveComponentRow(component: component, accent: accent) {
+                                    InteractiveComponentRow(component: component) {
                                         selectedComponent = component
                                     }
                                 }
@@ -211,7 +214,7 @@ struct ContentView: View {
                     .toolbar {
                         ToolbarItem(placement: .confirmationAction) {
                             Button("Закрыть") { selectedComponent = nil }
-                                .foregroundStyle(accent)
+                                .foregroundStyle(Theme.accent)
                                 .font(.system(size: 15, weight: .semibold))
                         }
                     }
@@ -221,7 +224,7 @@ struct ContentView: View {
     }
     
     private func getZoneImageName(for component: Component) -> String {
-        allZones.first(where: { $0.components.contains(component) })?.imageName ?? "engineBg"
+        vehicleZones.first(where: { $0.components.contains(component) })?.imageName ?? "engineBg"
     }
     
     private func openZoneMenu(_ zone: VehicleZone) {
@@ -235,21 +238,17 @@ struct ContentView: View {
 
 // MARK: - ЭКРАН СПИСКА СРАВНЕНИЙ
 struct ComparisonsListView: View {
-    let accent: Color
-    let bg = Color(red: 0.05, green: 0.05, blue: 0.07)
-    
     var body: some View {
         ZStack {
-            bg.ignoresSafeArea()
+            Color.black.ignoresSafeArea()
             ScrollView {
                 VStack(spacing: 16) {
-                    // Убедитесь, что массив systemComparisons объявлен в вашем проекте
                     ForEach(systemComparisons) { table in
                         NavigationLink(destination: ComparisonTableView(table: table)) {
                             HStack {
                                 Image(systemName: table.icon)
                                     .font(.title2)
-                                    .foregroundStyle(accent)
+                                    .foregroundStyle(Theme.accent)
                                     .frame(width: 40)
                                 Text(table.title)
                                     .font(.system(size: 16, weight: .bold))
@@ -259,9 +258,9 @@ struct ComparisonsListView: View {
                                     .foregroundStyle(.gray)
                             }
                             .padding(20)
-                            .background(Color.white.opacity(0.05))
-                            .clipShape(RoundedRectangle(cornerRadius: 16))
+                            .glassCard(cornerRadius: 16)
                         }
+                        .buttonStyle(.glassTouch)
                     }
                 }
                 .padding(20)
@@ -269,7 +268,7 @@ struct ComparisonsListView: View {
         }
         .navigationTitle("Сравнения")
         .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(bg, for: .navigationBar)
+        .toolbarBackground(Color.black, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbarColorScheme(.dark, for: .navigationBar)
     }
@@ -278,10 +277,7 @@ struct ComparisonsListView: View {
 // MARK: - КАРТОЧКА ЗОНЫ
 struct PremiumZoneCard: View {
     let zone: VehicleZone
-    let accent: Color
     let action: () -> Void
-    
-    @State private var isPressed = false
     
     var body: some View {
         Button(action: action) {
@@ -291,23 +287,22 @@ struct PremiumZoneCard: View {
                         .resizable()
                         .scaledToFill()
                         .frame(width: geo.size.width, height: geo.size.height)
-                        .brightness(isPressed ? -0.12 : 0)
                         .clipped()
                     
                     LinearGradient(
                         colors: [
                             .black.opacity(0.15),
                             .black.opacity(0.45),
-                            .black.opacity(isPressed ? 0.95 : 0.85)
+                            .black.opacity(0.85)
                         ],
                         startPoint: .top,
                         endPoint: .bottom
                     )
                     
                     VStack(alignment: .leading, spacing: 0) {
-                        Image(systemName: zone.icon)
+                        Image(systemName: zone.icon ?? "car.fill")
                             .font(.system(size: 15, weight: .semibold))
-                            .foregroundStyle(accent)
+                            .foregroundStyle(Theme.accent)
                             .frame(width: 38, height: 38)
                             .background(.ultraThinMaterial)
                             .clipShape(Circle())
@@ -335,28 +330,17 @@ struct PremiumZoneCard: View {
         .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .stroke(.white.opacity(isPressed ? 0.3 : 0.12), lineWidth: 1)
+                .stroke(.white.opacity(0.12), lineWidth: 1)
         )
-        .scaleEffect(isPressed ? 0.96 : 1.0)
         .shadow(color: .black.opacity(0.35), radius: 8, x: 0, y: 4)
-        .buttonStyle(PlainButtonStyle())
-        ._onButtonGesture { pressing in
-            withAnimation(.easeInOut(duration: 0.12)) {
-                isPressed = pressing
-            }
-        } perform: {
-            action()
-        }
+        .buttonStyle(.glassTouch)
     }
 }
 
 // MARK: - ЭЛЕМЕНТ СПИСКА В ШТОРКЕ
 struct InteractiveComponentRow: View {
     let component: Component
-    let accent: Color
     let action: () -> Void
-    
-    @State private var isPressed = false
     
     var body: some View {
         Button(action: action) {
@@ -369,25 +353,12 @@ struct InteractiveComponentRow: View {
                 
                 Image(systemName: "arrow.up.right")
                     .font(.system(size: 12, weight: .bold))
-                    .foregroundStyle(accent)
+                    .foregroundStyle(Theme.accent)
             }
             .padding(18)
-            .background(isPressed ? Color.white.opacity(0.12) : Color.white.opacity(0.06))
-            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .stroke(.white.opacity(isPressed ? 0.25 : 0.08), lineWidth: 1)
-            )
-            .scaleEffect(isPressed ? 0.98 : 1.0)
+            .glassCard(cornerRadius: 16)
         }
-        .buttonStyle(PlainButtonStyle())
-        ._onButtonGesture { pressing in
-            withAnimation(.easeInOut(duration: 0.1)) {
-                isPressed = pressing
-            }
-        } perform: {
-            action()
-        }
+        .buttonStyle(.glassTouch)
     }
 }
 
